@@ -25,7 +25,7 @@ func main() {
                 if *time_ptr == 0 || len(*project_ptr) == 0 || len(*instance_ptr) == 0 || len(*zone_ptr) == 0 {
                         log.Fatalf("arguments may not be empty")
                 }
-        fmt.Println(*time_ptr)
+        // fmt.Println(*time_ptr)
         ctx := context.Background()
 
         // Creates a client.
