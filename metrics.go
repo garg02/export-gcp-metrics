@@ -17,12 +17,13 @@ import (
 
 func main() {
         time_ptr := flag.Int64("batch", 0, "int value for batch metric")
+        metric_ptr :=  flag.String("metric", "", "string value for the metric name")
         project_ptr :=  flag.String("projID", "", "string value for the project ID of the instance")
         instance_ptr :=  flag.String("instID", "", "string value for the ID of the instance")
         zone_ptr :=  flag.String("zoneID", "", "string value for the zone ID of the instance")
         flag.Parse()
 
-                if *time_ptr == 0 || len(*project_ptr) == 0 || len(*instance_ptr) == 0 || len(*zone_ptr) == 0 {
+                if *time_ptr == 0 || len(*project_ptr) == 0 || len(*project_ptr) == 0 || len(*instance_ptr) == 0 || len(*zone_ptr) == 0 {
                         log.Fatalf("arguments may not be empty")
                 }
         // fmt.Println(*time_ptr)
@@ -54,9 +55,9 @@ func main() {
                 TimeSeries: []*monitoringpb.TimeSeries{
                         {
                                 Metric: &metricpb.Metric{
-                                        Type: "custom.googleapis.com/batch_num",
+                                        Type: "custom.googleapis.com/" + *metric_ptr,
                                         Labels: map[string]string{
-                                                "batch_num": strconv.Itoa(int(*time_ptr)),
+                                                *metric_ptr: strconv.Itoa(int(*time_ptr)),
                                         },
                                 },
                                 Resource: &monitoredrespb.MonitoredResource{
