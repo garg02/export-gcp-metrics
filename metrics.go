@@ -6,7 +6,10 @@ import (
         "log"
         "time"
         "flag"
-        "strconv"
+        "bufio"
+ 	"io"
+ 	"os"
+ 	"strings"
 
         monitoring "cloud.google.com/go/monitoring/apiv3/v2"
         googlepb "github.com/golang/protobuf/ptypes/timestamp"
@@ -15,21 +18,54 @@ import (
         monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 )
 
-func main() {
-        time_ptr := flag.Int64("batch", 0, "int value for batch metric")
-        metric_ptr :=  flag.String("metric", "", "string value for the metric name")
-        project_ptr :=  flag.String("projID", "", "string value for the project ID of the instance")
-        instance_ptr :=  flag.String("instID", "", "string value for the ID of the instance")
-        zone_ptr :=  flag.String("zoneID", "", "string value for the zone ID of the instance")
-        flag.Parse()
+type Config map[string]string
 
-                if *time_ptr == 0 || len(*project_ptr) == 0 || len(*project_ptr) == 0 || len(*instance_ptr) == 0 || len(*zone_ptr) == 0 {
-                        log.Fatalf("arguments may not be empty")
-                }
-        // fmt.Println(*time_ptr)
-        ctx := context.Background()
+func ReadConfig(filename string) (Config, error) {
+        // init with some bogus data
+        config := Config{
+ 		"instID":       "",
+ 		"projID":       "",
+ 		"zoneID":       "",
+        }
+ 	if len(filename) == 0 {
+ 		return config, nil
+ 	}
+ 	file, err := os.Open(filename)
+ 	if err != nil {
+ 		return nil, err
+ 	}
+ 	defer file.Close()
+ 	
+ 	reader := bufio.NewReader(file)
+ 	
+ 	for {
+                line, err := reader.ReadString('\n')
+ 		
+ 		// check if the line has = sign and process the line. 
 
-        // Creates a client.
+ 		if equal := strings.Index(line, "="); equal >= 0 {
+ 			if key := strings.TrimSpace(line[:equal]); len(key) > 0 {
+ 				value := ""
+ 				if len(line) > equal {
+ 					value = strings.TrimSpace(line[equal+1:])
+ 				}
+                             // assign the config map
+ 				config[key] = value
+ 			}
+ 		}
+ 		if err == io.EOF {
+ 			break
+ 		}
+ 		if err != nil {
+ 			return nil, err
+ 		}
+ 	}
+ 	return config, nil
+ }
+
+func SubmitMetric(projID string, instID string, zoneID string, 
+                  batchLabel string, batchVal string) {
+// Creates a client.
         client, err := monitoring.NewMetricClient(ctx)
         if err != nil {
                 log.Fatalf("Failed to create client: %v", err)
@@ -51,20 +87,20 @@ func main() {
 
         // Writes time series data.
         if err := client.CreateTimeSeries(ctx, &monitoringpb.CreateTimeSeriesRequest{
-                Name: fmt.Sprintf("projects/%s", *project_ptr),
+                Name: "projects/" + projID,
                 TimeSeries: []*monitoringpb.TimeSeries{
                         {
                                 Metric: &metricpb.Metric{
-                                        Type: "custom.googleapis.com/" + *metric_ptr,
+                                        Type: "custom.googleapis.com/" + batchLabel,
                                         Labels: map[string]string{
-                                                *metric_ptr: strconv.Itoa(int(*time_ptr)),
+                                                batchLabel: batchVal,
                                         },
                                 },
                                 Resource: &monitoredrespb.MonitoredResource{
                                         Type: "gce_instance",
                                         Labels: map[string]string{
-                                                "instance_id": *instance_ptr,
-                                                        "zone": *zone_ptr,
+                                                "instance_id": instID,
+                                                        "zone": zoneID,
                                         },
                                 },
                                 Points: []*monitoringpb.Point{
@@ -80,4 +116,40 @@ func main() {
         if err := client.Close(); err != nil {
                 log.Fatalf("Failed to close client: %v", err)
         }
+}
+
+
+func main() {
+        file_ptr := flag.String("filepath", "", "file with metadata and batch label(s)/value(s)")
+        flag.Parse()
+
+                if len(*file_ptr) == 0 {
+                        log.Fatalf("file argument may not be empty")
+                }
+
+        ctx := context.Background()
+        
+        config, err := ReadConfig(*file_ptr)
+        
+        if err != nil {
+ 		fmt.Println(err)
+ 	}
+
+        if len(config) <= 3 {
+                log.Fatalf("Must have at least one metric to report")
+        }
+        if len(config[instID]) == 0 || len(config[projID]) == 0 || len(config[zoneID]) == 0 {
+                log.Fatalf("instID, projID, and zoneID values must be present in the file")
+        }
+        
+        instID = config["instID"]
+        delete(config, "instID")
+        projID = config["projID"]
+        delete(config, "projID")
+        zoneID = config["zoneID"]
+        delete(config, "zoneID")
+        
+        for batchLabel, batchVal := range config {
+                SubmitMetric(projID, instID, zoneID, batchLabel, batchVal)
+        }       
 }
