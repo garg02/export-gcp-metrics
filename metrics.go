@@ -66,6 +66,7 @@ func ReadConfig(filename string) (Config, error) {
 func SubmitMetric(projID string, instID string, zoneID string, 
                   batchLabel string, batchVal string) {
 // Creates a client.
+        ctx := context.Background()
         client, err := monitoring.NewMetricClient(ctx)
         if err != nil {
                 log.Fatalf("Failed to create client: %v", err)
@@ -138,7 +139,7 @@ func main() {
         if len(config) <= 3 {
                 log.Fatalf("Must have at least one metric to report")
         }
-        if len(config[instID]) == 0 || len(config[projID]) == 0 || len(config[zoneID]) == 0 {
+        if len(config["instID"]) == 0 || len(config["projID"]) == 0 || len(config["zoneID"]) == 0 {
                 log.Fatalf("instID, projID, and zoneID values must be present in the file")
         }
         
