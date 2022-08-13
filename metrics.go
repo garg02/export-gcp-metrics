@@ -127,8 +127,6 @@ func main() {
                 if len(*file_ptr) == 0 {
                         log.Fatalf("file argument may not be empty")
                 }
-
-        ctx := context.Background()
         
         config, err := ReadConfig(*file_ptr)
         
