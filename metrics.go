@@ -143,11 +143,11 @@ func main() {
                 log.Fatalf("instID, projID, and zoneID values must be present in the file")
         }
         
-        instID = config["instID"]
+        instID := config["instID"]
         delete(config, "instID")
-        projID = config["projID"]
+        projID := config["projID"]
         delete(config, "projID")
-        zoneID = config["zoneID"]
+        zoneID := config["zoneID"]
         delete(config, "zoneID")
         
         for batchLabel, batchVal := range config {
