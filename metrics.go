@@ -23,9 +23,9 @@ type Config map[string]string
 func ReadConfig(filename string) (Config, error) {
         // init with some bogus data
         config := Config{
- 		"instID":       "",
- 		"projID":       "",
- 		"zoneID":       "",
+ 		"INSTANCE_ID":       "",
+ 		"PROJECT_ID":       "",
+ 		"ZONE_ID":       "",
         }
  	if len(filename) == 0 {
  		return config, nil
@@ -137,16 +137,16 @@ func main() {
         if len(config) <= 3 {
                 log.Fatalf("Must have at least one metric to report")
         }
-        if len(config["instID"]) == 0 || len(config["projID"]) == 0 || len(config["zoneID"]) == 0 {
+        if len(config["INSTANCE_ID"]) == 0 || len(config["PROJECT_ID"]) == 0 || len(config["ZONE_ID"]) == 0 {
                 log.Fatalf("instID, projID, and zoneID values must be present in the file")
         }
         
-        instID := config["instID"]
-        delete(config, "instID")
-        projID := config["projID"]
-        delete(config, "projID")
-        zoneID := config["zoneID"]
-        delete(config, "zoneID")
+        instID := config["INSTANCE_ID"]
+        delete(config, "INSTANCE_ID")
+        projID := config["PROJECT_ID"]
+        delete(config, "PROJECT_ID")
+        zoneID := config["ZONE_ID"]
+        delete(config, "ZONE_ID")
         
         for batchLabel, batchVal := range config {
                 SubmitMetric(projID, instID, zoneID, batchLabel, batchVal)
