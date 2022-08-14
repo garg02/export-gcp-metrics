@@ -137,8 +137,9 @@ func main() {
         if len(config) <= 3 {
                 log.Fatalf("Must have at least one metric to report")
         }
+        fmt.Println("map:", config)
         if len(config["INSTANCE_ID"]) == 0 || len(config["PROJECT_ID"]) == 0 || len(config["ZONE_ID"]) == 0 {
-                log.Fatalf("instID, projID, and zoneID values must be present in the file")
+                log.Fatalf("INSTANCE_ID, PROJECT_ID, and ZONE_ID values must be present in the file")
         }
         
         instID := config["INSTANCE_ID"]
