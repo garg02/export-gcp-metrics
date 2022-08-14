@@ -121,7 +121,7 @@ func SubmitMetric(projID string, instID string, zoneID string,
 
 
 func main() {
-        file_ptr := flag.String("--file", "", "file with metadata and batch label(s)/value(s)")
+        file_ptr := flag.String("f", "", "file with metadata and batch label(s)/value(s)")
         flag.Parse()
 
                 if len(*file_ptr) == 0 {
