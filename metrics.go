@@ -94,7 +94,7 @@ func SubmitMetric(projID string, instID string, zoneID string,
                                 Metric: &metricpb.Metric{
                                         Type: "custom.googleapis.com/" + batchLabel,
                                         Labels: map[string]string{
-                                                batchLabel: batchVal,
+                                                "batch_num": batchVal,
                                         },
                                 },
                                 Resource: &monitoredrespb.MonitoredResource{
