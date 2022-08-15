@@ -158,8 +158,7 @@ func main() {
                         err = SubmitMetric(projID, instID, zoneID, batchLabel, batchVal)
                         fmt.Println("hello world")
                         if err == nil {break}
+                        time.Sleep(5 * time.Second)
                 }
-                
-                time.Sleep(5 * time.Second)
         }       
 }
