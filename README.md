@@ -32,8 +32,8 @@ Export PROJECT_ID, START_TIME, and END_TIME variables to the shell environment. 
     
     If envsubst is not installed, manually open the config-template.py file, update the variables, and save it as config.py.
 
-## export metrics to csv
-1.  run the script
+### Export metrics to csv
+1.  Run the script
 
         python3 export_metric_data.py
 
