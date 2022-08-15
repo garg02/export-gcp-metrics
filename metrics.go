@@ -10,6 +10,7 @@ import (
  	"io"
  	"os"
  	"strings"
+        "time"
 
         monitoring "cloud.google.com/go/monitoring/apiv3/v2"
         googlepb "github.com/golang/protobuf/ptypes/timestamp"
@@ -70,6 +71,7 @@ func SubmitMetric(projID string, instID string, zoneID string,
         client, err := monitoring.NewMetricClient(ctx)
         if err != nil {
                 log.Fatalf("Failed to create client: %v", err)
+                return err
         }
 
         // Prepares an individual data point
@@ -111,12 +113,16 @@ func SubmitMetric(projID string, instID string, zoneID string,
                 },
         }); err != nil {
                 log.Fatalf("Failed to write time series data: %v", err)
+                return err
         }
 
         // Closes the client and flushes the data to Stackdriver.
         if err := client.Close(); err != nil {
                 log.Fatalf("Failed to close client: %v", err)
+                return err
         }
+        
+        return nil
 }
 
 
@@ -149,6 +155,11 @@ func main() {
         delete(config, "ZONE_ID")
         
         for batchLabel, batchVal := range config {
-                SubmitMetric(projID, instID, zoneID, batchLabel, batchVal)
+                for i := 1; i < 5; i++ {
+                        err = SubmitMetric(projID, instID, zoneID, batchLabel, batchVal)
+                        if err == nil {break}
+                }
+                
+                time.Sleep(5 * time.Second)
         }       
 }
