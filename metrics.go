@@ -64,7 +64,7 @@ func ReadConfig(filename string) (Config, error) {
  }
 
 func SubmitMetric(projID string, instID string, zoneID string, 
-                  batchLabel string, batchVal string) {
+                  batchLabel string, batchVal string) (error){
 // Creates a client.
         ctx := context.Background()
         client, err := monitoring.NewMetricClient(ctx)
