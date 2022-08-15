@@ -156,6 +156,7 @@ func main() {
         for batchLabel, batchVal := range config {
                 for i := 1; i < 5; i++ {
                         err = SubmitMetric(projID, instID, zoneID, batchLabel, batchVal)
+                        fmt.Println("hello world")
                         if err == nil {break}
                 }
                 
