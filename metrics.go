@@ -10,7 +10,6 @@ import (
  	"io"
  	"os"
  	"strings"
-        "time"
 
         monitoring "cloud.google.com/go/monitoring/apiv3/v2"
         googlepb "github.com/golang/protobuf/ptypes/timestamp"
