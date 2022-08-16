@@ -11,7 +11,7 @@ This solution uses the Google Cloud [Monitoring Query Language (MQL)](https://cl
 ### Get Code and Configure MQL Queries
 Clone the repository and enter the directory:
 
-        git clone https://github.com/garg02/gcp-custom-metric-export.git
+        git clone https://github.com/garg02/export-gcp-metrics.git
         cd gcp-custom-metric-export
 
 Add and update the MQL queries as needed in the `config-template.py` file. You can find examples in the [MQL documentation](https://cloud.google.com/monitoring/mql/examples). This repository's default queries align CPU/GPU usage with an instance's batch number over time as created in [this project](https://github.com/garg02/gcp-custom-metric).
